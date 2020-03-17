@@ -10,20 +10,17 @@ dotenv.config();
 server.use(express.json()); // without this, you cannot post
 server.use(cors());
 
-
-
-
-server.get("/", async(req, res) => {
+server.get("/", passport.authenticate("jwt"), async(req, res) => {
   res.send(await User.find())
 })
 
-server.post("/", async (req, res) => {
+server.post("/:username", passport.authenticate("jwt") ,async (req, res) => {
   try{ let response = await User.create(req.body)
-    res.send(response);
+    if(req.params.username === req.user.username)
+      res.send(response);
   }catch(e){
     res.send(e)
   }
- 
 });
 
 const PORT = process.env.PORT || 9500;
