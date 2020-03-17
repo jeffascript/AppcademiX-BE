@@ -26,6 +26,7 @@ const postSchema = new mongoose.Schema({
         required: true
     },
     image: {
+        type: String,
         default: "http://saveabandonedbabies.org/wp-content/uploads/2015/08/default.png"
     },
     comments: {
