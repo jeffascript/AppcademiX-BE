@@ -4,11 +4,11 @@ const UserModel = require('../model/userSchema')
 const {upload} = require('../middlewares/uploadImageMiddleware')
 const router = Router()
 
-router.get("/:username",  async (req, res) => {
+router.get("/",  async (req, res) => {
     try {
-        const requestedUser = await UserModel.findOne({username: req.params.username})
+        const requestedUser = await UserModel.find({})
         if (!requestedUser )
-            throw new Error(`${req.params.username} not found`)
+            throw new Error(`user not found`)
         res.send(requestedUser)
     } catch (error) {
         res.status(500).send(error)

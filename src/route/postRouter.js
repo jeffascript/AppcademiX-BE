@@ -1,9 +1,12 @@
 const express = require("express");
-
-const postsRouter = express.Router(); 
-
+const passport = require("passport");
+const postsRouter = express.Router();
+const Profiles = require("../model/userSchema");
 const Posts = require("../model/postSchema");
-
+const multer = require("multer");
+const multerConfig = multer({});
+const fs = require("fs-extra");
+const path = require("path");
 
 postsRouter.get("/", async (req, res) => {
   try {
@@ -15,55 +18,177 @@ postsRouter.get("/", async (req, res) => {
     delete query.skip;
     delete query.sort;
     const postsList = await Posts.find(query)
-        .sort({ [sort]: 1 })
-        .limit(parseInt(limit))
-        .skip(parseInt(skip));
+      .sort({ [sort]: 1 })
+      .limit(parseInt(limit))
+      .skip(parseInt(skip));
 
     postsList.length > 0
       ? res.send({
           total: postsCount,
-          queryParam : `${req.protocol}://${req.get("host")}/posts?${sort}=string&${limit}=number&${skip}=number`,
+          queryParam: `${req.protocol}://${req.get(
+            "host"
+          )}/posts?sort=string&limit=number&skip=number`,
           postsList
-          
         })
-      : res.send("No profile to show at the moment!");
+      : res.status(404).send("No post to show at the moment!");
   } catch (error) {
     console.log(error);
     res.status(500).send(error);
   }
 });
 
-
-
-
-postsRouter.get("/username/:username", async (req, res) => {
+postsRouter.get("/:id", async (req, res) => {
   try {
-    const { username } = req.params;
-    const profile = await Profiles.findOne({ username: username });
+    const post = await Posts.findById(req.params.id);
 
-    if (!profile) {
-      res.status(404).send("cannot find the profile with the username");
-    }
-
-    res.send(profile);
+    post || post.length > 0
+      ? res.send(post)
+      : res.status(404).send("This post was not found!");
   } catch (ex) {
     console.log(ex);
     res.status(500).send(ex);
   }
 });
 
+postsRouter.get("/username/:username", async (req, res) => {
+  try {
+    const { username } = req.params;
+    const post = await Posts.find({ username: username });
 
-postsRouter.post("/image/:username", async (req,res)=>{
-try {
-    
-    
-} catch (ex) {
+    if (!post) {
+      res.status(404).send("cannot find the profile with the username");
+    }
+
+    res.send(post);
+  } catch (ex) {
     console.log(ex);
     res.status(500).send(ex);
-}
+  }
+});
 
-})
+postsRouter.post(
+  "/:username",
+  passport.authenticate("jwt"),
+  async (req, res) => {
+    try {
+      const { username } = req.params;
+      const profile = await Profiles.findOne({ username }); // destructured--> ({ username: username})
+      if (!profile) {
+        res.status(404).send({ message: "Username not found" });
+      }
 
+      if (req.user.username !== username) {
+        res.status(401).send("You are not authorized to post");
+      } else {
+        req.body.username = username;
 
+        const newPost = await Posts.create(req.body);
+        res.send({ success: "Post added", newPost });
+      }
+    } catch (ex) {
+      console.log(ex);
+      res.status(500).send(ex);
+    }
+  }
+);
+
+postsRouter.post(
+  "/image/:id/:username",
+  multerConfig.single("postImage"),
+  passport.authenticate("jwt"),
+  async (req, res) => {
+    try {
+      if (req.user.username !== req.params.username) {
+        res.status(401).send("You are not authorized to post");
+      } else {
+        const fileName = `post_${req.params.id}${path.extname(
+          req.file.originalname
+        )}`; //the assigned name for the image with extension name
+        const newImageLocation = path.join(
+          __dirname,
+          "../../images/posts",
+          fileName
+        );
+        await fs.writeFile(newImageLocation, req.file.buffer);
+        req.body.image = `${req.protocol}://${req.get(
+          "host"
+        )}/images/posts/${fileName}`;
+
+        const newPostImg = await Posts.findByIdAndUpdate(
+          { _id: req.params.id },
+          {
+            $set: {
+              image: req.body.image
+            }
+          }
+        );
+
+        newPostImg.save();
+
+        res.send("image url updated");
+      }
+    } catch (ex) {
+      console.log(ex);
+      res.status(500).send(ex);
+    }
+  }
+);
+
+postsRouter.put(
+  "/:username/:id",
+  passport.authenticate("jwt"),
+  async (req, res) => {
+    try {
+      if (req.user.username !== req.params.username) {
+        res
+          .status(401)
+          .send("You do not have the authorization to edit this post");
+      } else {
+        const postToEdit = await Posts.findByIdAndUpdate(req.params.id, {
+          $set: {
+            ...req.body,
+            updatedAt: new Date()
+          }
+        });
+
+        if (!postToEdit) {
+          res.status(404).send(`Post with id: ${req.params.id} is not found !`);
+        } else {
+          res.send({ Message: "Updated!", post: req.body });
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).send(error);
+    }
+  }
+);
+
+postsRouter.delete(
+  "/:username/:id",
+  passport.authenticate("jwt"),
+  async (req, res) => {
+    try {
+      if (req.user.username !== req.params.username) {
+        res
+          .status(401)
+          .send("You do not have the authorization to delete this post");
+      } else {
+        const deletedPost = await Posts.findByIdAndDelete(req.params.id);
+
+        if (!deletedPost) {
+          res.status(404).send({
+            Message: `Post with id: ${req.params.id} not found for deletion!`
+          });
+        } else {
+          res.send({ Message: "Successfully Deleted" });
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      res.status(500).send(error);
+    }
+  }
+);
 
 module.exports = postsRouter;

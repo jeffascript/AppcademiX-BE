@@ -7,17 +7,24 @@ const connectMongoose = require("./src/db/mongodb");
 const authRouter = require("./src/route/authRouter");
 const userRouter = require("./src/route/userRouter");
 const postRouter = require("./src/route/postRouter");
+const ratingRouter = require("./src/route/ratingRouter")
+const path = require("path")
 
 const dotenv = require("dotenv");
 dotenv.config();
 
 server.use(express.json()); // without this, you cannot post-- body parser middleware
 server.use(cors());
+
 const PORT = process.env.PORT || 9500;
 
 server.use("/api/auth", authRouter);
 server.use("/api/users", userRouter);
 server.use("/api/posts", postRouter);
+server.use("/api/ratings", ratingRouter);
+
+
+server.use("/images/posts/", express.static(path.join(__dirname, "./images/posts/")))
 
 console.log(listEndPoints(server));
 

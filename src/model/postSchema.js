@@ -1,11 +1,12 @@
 const mongoose = require("mongoose")
 
-const upvote = new mongoose.Schema({
-    upvotedby: {
+const upvote = {
+    upvotedBy: {
         type: String,
-        required: true
+        unique:true
+       
     }
-})
+}
 
 const postSchema = new mongoose.Schema({
     username: {
