@@ -1,5 +1,6 @@
 const mongoose = require("mongoose")
 const passport = require("passport-local-mongoose")
+const { isEmail } = require("validator")
 
 const userSchema = new mongoose.Schema({
     username: {
@@ -10,7 +11,13 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
-        unique: true
+        trim: true,
+        lowercase:true,
+        unique: true,
+        validate: {
+            validator: string => isEmail(string),
+            message: "Provided email is invalid"
+        }
     },
     firstname: {
         type: String,
