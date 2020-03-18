@@ -12,6 +12,8 @@ dotenv.config();
 
 server.use(express.json()); // without this, you cannot post
 server.use(cors());
+const PORT = process.env.PORT || 9500;
+
 
 server.use("/api/auth", authRouter);
 server.use("/api/users", userRouter);
@@ -29,7 +31,7 @@ server.post("/:username", passport.authenticate("jwt") ,async (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 9500;
+
 
 console.log(listEndPoints(server));
 
