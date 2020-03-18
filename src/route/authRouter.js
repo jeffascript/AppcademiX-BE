@@ -4,7 +4,7 @@ const { generateToken } = require('../middlewares/authentificationMiddleware')
 const UserModel = require('../model/userSchema')
 const router = Router()
 
-router.get("/", passport.authenticate('jwt'), async (req, res) => {
+router.get("/",  async (req, res) => {
     try {
         res.send(await UserModel.find({}))
     } catch (error) {
@@ -14,8 +14,9 @@ router.get("/", passport.authenticate('jwt'), async (req, res) => {
 
 router.post("/register", async (req, res) => {
     try {
-        const user = await UserModel.register(req.body, req.body.password)
         const token = generateToken({ _id: user._id, username: user.username, email: user.email })
+        req.body.refreshtoken = token
+        const user = await UserModel.register(req.body, req.body.password)
         res.send({ access_token: token, username: user.username })
     } catch (error) {
         res.status(500).send(error.message)
@@ -32,7 +33,7 @@ router.post("/login", passport.authenticate('local'), async (req, res) => {
     }
 })
 
-router.post("/refresh", passport.authenticate('jwt'), async (req, res) => {
+router.post("/refreshtoken", passport.authenticate('jwt'), async (req, res) => {
     try {
         const token = generateToken({ _id: req.user._id, username: user.username })
         res.send({ access_token: token, username: req.user.username })
