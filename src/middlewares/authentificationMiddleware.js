@@ -13,6 +13,7 @@ passport.deserializeUser(UserModel.deserializeUser())
 passport.use(new LocalStrategy(UserModel.authenticate()))
 
 const password = process.env.JWT_SECRET
+
 const jwtConfig = {jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), secretOrKey: password}
 
 passport.use(new JwtStrategy(jwtConfig,(jwtPayload,next) => {
