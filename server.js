@@ -5,15 +5,16 @@ const passport = require('passport');
 const listEndPoints = require("express-list-endpoints");
 const connectMongoose = require("./src/db/mongodb")
 const authRouter = require('./src/route/authRouter')
+const userRouter = require('./src/route/userRouter')
 const User = require("./src/model/userSchema")
 const dotenv = require("dotenv");
 dotenv.config();
 
 server.use(express.json()); // without this, you cannot post
-server.use(passport.authenticate())
 server.use(cors());
 
 server.use("/api/auth", authRouter);
+server.use("/api/users", userRouter);
 
 server.get("/", passport.authenticate("jwt"), async(req, res) => {
   res.send(await User.find())
