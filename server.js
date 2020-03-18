@@ -2,6 +2,7 @@ const express = require("express");
 const server = express();
 const cors = require("cors");
 const passport = require('passport');
+const {join} = require('path')
 const listEndPoints = require("express-list-endpoints");
 const connectMongoose = require("./src/db/mongodb")
 const authRouter = require('./src/route/authRouter')
@@ -17,6 +18,7 @@ const PORT = process.env.PORT || 9500;
 
 server.use("/api/auth", authRouter);
 server.use("/api/users", userRouter);
+server.use("/images", express.static(join(__dirname, './public/images/')))
 
 server.get("/", passport.authenticate("jwt"), async(req, res) => {
   res.send(await User.find())
