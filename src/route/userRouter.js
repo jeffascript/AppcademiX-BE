@@ -51,7 +51,7 @@ router.post('/:username/image', passport.authenticate('jwt'), uploadLocal.single
             return res.status(500).send('Please select an image')
 
         let fileName = `${req.params.username}${extname(req.file.originalname)}`
-        let imageUrl = `${req.protocol}://${req.get('host')}/posts/${fileName}`
+        let imageUrl = `${req.protocol}://${req.get('host')}/images/${fileName}`
         req.body.image = imageUrl
         let updateProfile = await UserModel.findOneAndUpdate({
             _id: req.params.postId
