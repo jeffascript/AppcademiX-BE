@@ -14,10 +14,9 @@ router.get("/",  async (req, res) => {
 
 router.post("/register", async (req, res) => {
     try {
-        const token = generateToken({ _id: user._id, username: user.username, email: user.email })
-        req.body.refreshtoken = token
         const user = await UserModel.register(req.body, req.body.password)
         res.send({ access_token: token, username: user.username })
+        const token = generateToken({ _id: user._id, username: user.username, email: user.email })
     } catch (error) {
         res.status(500).send(error.message)
     }
