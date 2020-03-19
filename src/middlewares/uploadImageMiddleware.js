@@ -3,6 +3,6 @@ const {join, extname} = require('path')
 
 const storage = multer.diskStorage({})
 
-module.exports = {
+module.exports = { 
     upload: storage
 }
