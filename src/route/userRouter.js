@@ -1,5 +1,6 @@
 const { Router } = require('express')
 const passport = require('passport')
+const {extname} = require('path')
 const UserModel = require('../model/userSchema')
 const { uploadLocal } = require('../middlewares/uploadOnLocal')
 const router = Router()
@@ -54,7 +55,7 @@ router.post('/:username/image', passport.authenticate('jwt'), uploadLocal.single
         let imageUrl = `${req.protocol}://${req.get('host')}/images/${fileName}`
         req.body.image = imageUrl
         let updateProfile = await UserModel.findOneAndUpdate({
-            _id: req.params.postId
+            username: req.params.username
         }, {
             ...req.body
         }, {

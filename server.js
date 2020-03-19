@@ -12,6 +12,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 server.use(express.json()); // without this, you cannot post
+server.use(passport.initialize())
 server.use(cors());
 const PORT = process.env.PORT || 9500;
 
