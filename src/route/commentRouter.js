@@ -157,13 +157,17 @@ commentRouter.put(
   );
 
 
-// delete -> api/posts/:postid/:id/:username
+// delete -> api/comments/:commentid/posts/:postid?username=:username
+
 commentRouter.delete(
-    "/:postid/:id/:username",
+    "/:commentid/posts/:postid",
+    //"/:postid/:id?username=:username",
     passport.authenticate("jwt"),
     async (req, res) => {
+        
       try {
-        if (req.user.username !== req.params.username) {
+        
+        if (req.user.username !== req.query.username) {
           res
             .status(401)
             .send("You do not have the authorization to delete this post");
@@ -175,11 +179,11 @@ commentRouter.delete(
             }
             else{
 
-                const deletedComment = await Comment.findByIdAndDelete(req.params.id);
+                const deletedComment = await Comment.findByIdAndDelete(req.params.commentid);
         
                 if (!deletedComment) {
                   res.status(404).send({
-                    Message: `Comment with id: ${req.params.id} not found for deletion!`
+                    Message: `Comment with id: ${req.params.commentsid} not found for deletion!`
                   });
                 } else {
                   res.send({ Message: "Successfully Deleted" });
