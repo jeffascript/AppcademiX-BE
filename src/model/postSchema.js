@@ -2,8 +2,8 @@ const mongoose = require("mongoose")
 
 const upvote = {
     upvotedBy: {
-        type: String,
-        unique:true
+        type: String
+    
        
     }
 }
