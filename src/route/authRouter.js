@@ -34,7 +34,7 @@ router.post("/login", passport.authenticate('local'), async (req, res) => {
 
 router.post("/refreshtoken", passport.authenticate('jwt'), async (req, res) => {
     try {
-        const token = generateToken({ _id: req.user._id, username: user.username })
+        const token = generateToken({ _id: req.user._id, username: req.user.username })
         res.send({ access_token: token, username: req.user.username })
     } catch (error) {
         res.status(500).send(error.message)

@@ -13,11 +13,11 @@ ratingsRouter.get("/:postId", async (req, res) => {
         _id: 0
       });
       const upVotesForPostId = allPostsWithRatings.ratings;
-      console.log(upVotesForPostId.length);
+    //   console.log(upVotesForPostId.length);
 
-      res.send({ upVotalTotal: upVotesForPostId.length, upVotesForPostId });
+      res.send({ upVotalTotal: upVotesForPostId.length, post:upVotes });
     } else {
-      res.send("No ratings for this Post");
+      res.status(404).send("No upvotes in Post");
     }
   } catch (error) {
     console.log(error);
@@ -57,7 +57,7 @@ ratingsRouter.post(
               );
       
               if (userExists) {
-                  console.log(userExists)
+                //   console.log(userExists)
                const removeExistingUser = { upvotedBy: req.params.username };
                 await Posts.findByIdAndUpdate(postID, {
                   $pull: { ratings: removeExistingUser }
@@ -104,7 +104,7 @@ ratingsRouter.delete("/:postID/:username",passport.authenticate("jwt"),
             { _id: 0, "ratings.$": 1 }
           );
           if (!userToBeDeleted) {
-            console.log(!userToBeDeleted);
+            
             res.status(404).send({
               error: "User never rated the Post"
             });
