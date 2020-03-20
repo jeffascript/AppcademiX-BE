@@ -9,6 +9,7 @@ const authRouter = require("./src/route/authRouter");
 const userRouter = require("./src/route/userRouter");
 const postRouter = require("./src/route/postRouter");
 const ratingRouter = require("./src/route/ratingRouter")
+const commentRouter = require("./src/route/commentRouter")
 const path = require("path")
 
 const dotenv = require("dotenv");
@@ -24,6 +25,7 @@ server.use("/api/auth", authRouter);
 server.use("/api/users", userRouter);
 server.use("/api/posts", postRouter);
 server.use("/api/ratings", ratingRouter);
+server.use("/api/comments", commentRouter);
 server.use("/images", express.static(join(__dirname, './public/images/')))
 
 
