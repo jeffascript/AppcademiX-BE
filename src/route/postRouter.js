@@ -146,8 +146,7 @@ postsRouter.put(
       } else {
         const postToEdit = await Posts.findByIdAndUpdate(req.params.id, {
           $set: {
-            ...req.body,
-            updatedAt: new Date()
+            ...req.body
           }
         });
 
