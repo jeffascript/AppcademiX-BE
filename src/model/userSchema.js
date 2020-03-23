@@ -31,6 +31,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         default: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Antu_system-switch-user.svg/600px-Antu_system-switch-user.svg.png"
     },
+    isVerified :{
+        type: Boolean,
+        default: false
+    },
     refreshtoken: String
 }, {
     timestamps: true
