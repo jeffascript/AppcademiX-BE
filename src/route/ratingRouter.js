@@ -68,6 +68,19 @@ ratingsRouter.post(
               await Posts.findByIdAndUpdate(postID, {
                 $push: { ratings: addTheUser }
               });
+
+              
+              const allRatings =   await Posts.findById(postID, {
+                ratings: 1,
+                _id: 0
+              });
+
+              const totalRatings = allRatings.ratings;
+
+             await Posts.findByIdAndUpdate(postID, {
+               $set: { ratingsCount: totalRatings.length }
+             });
+
               res.send({ message: "added the upvote by " + req.params.username });
     
              
@@ -113,6 +126,18 @@ ratingsRouter.delete("/:postID/:username",passport.authenticate("jwt"),
             await Posts.findByIdAndUpdate(postID, {
               $pull: { ratings: body }
             });
+         
+            const allRatings =   await Posts.findById(postID, {
+                ratings: 1,
+                _id: 0
+              });
+
+              const totalRatings = allRatings.ratings;
+
+             await Posts.findByIdAndUpdate(postID, {
+               $set: { ratingsCount: totalRatings.length }
+             });
+
             res.send({ success: "deleted the like by user" });
           }
         }

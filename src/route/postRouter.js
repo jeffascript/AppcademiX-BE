@@ -18,7 +18,7 @@ postsRouter.get("/", async (req, res) => {
     delete query.skip;
     delete query.sort;
     const postsList = await Posts.find(query)
-      .sort({ [sort]: 1 })
+      .sort({ [sort]: -1 })
       .limit(parseInt(limit))
       .skip(parseInt(skip));
 
@@ -81,7 +81,8 @@ postsRouter.post(
         res.status(401).send("You are not authorized to post");
       } else {
         req.body.username = username;
-
+        // req.body.ratingsCount = db.collection.aggregate( { $project: {name:1, telephoneCount: {$size: "$telephone"}}})
+       
         const newPost = await Posts.create(req.body);
         res.send({ success: "Post added", newPost });
       }
