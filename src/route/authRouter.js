@@ -22,7 +22,7 @@ router.post("/register", async (req, res) => {
         let subject = "APPCADEMIX Account Verification Token"
         let to = user.email
         let from = process.env.FROM_EMAIL
-        let link = `${req.protocol}://${req.headers.host}/api/auth/verify/${username}`
+        let link = `${req.protocol}://${req.headers.host}/api/auth/verify?token=${username}`
         console.log(link)
         let html = `<p>Hi ${user.username}<p><br><p>Please click on the following <a href="${link}">link</a> to verify your account.</p> 
                   <br><p>If you did not request this, please ignore this email.</p>`
@@ -53,9 +53,9 @@ router.post("/refreshtoken", passport.authenticate('jwt'), async (req, res) => {
     }
 })
 
-router.get('/verify/:username', async (req, res) => {
+router.get('/verify', async (req, res) => {
     try {
-        const bytes = CryptoJS.AES.decrypt( req.params.username, process.env.CRYPTO_SECRET);
+        const bytes = CryptoJS.AES.decrypt(req.query.token , process.env.CRYPTO_SECRET);
         const username = bytes.toString(CryptoJS.enc.Utf8);
         const userProfile = await UserModel.findOneAndUpdate({ username:username }, {
             $set: {
