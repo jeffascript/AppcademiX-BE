@@ -10,18 +10,8 @@ dotenv.config()
 passport.serializeUser(UserModel.serializeUser())
 passport.deserializeUser(UserModel.deserializeUser())
 
-//passport.use(new LocalStrategy(UserModel.authenticate()))
+passport.use(new LocalStrategy(UserModel.authenticate()))
 
-passport.use(new LocalStrategy(
-    (username, password, done) => {
-      UserModel.findOne({ username: username },  (err, user,res) => {
-        if (err) { return done(err); }
-        if (!user) { return done(null, false); }
-        if (user && !user.isVerified) return done(err, null,{message:'please verify your email'})
-        return done(null, user);
-      });
-    }
-  ));
 
 const password = process.env.JWT_SECRET
 

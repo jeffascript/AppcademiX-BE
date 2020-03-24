@@ -22,7 +22,7 @@ router.post("/register", async (req, res) => {
         let subject = "APPCADEMIX Account Verification Token"
         let to = user.email
         let from = process.env.FROM_EMAIL
-        let link = `${req.protocol}://${req.get('host')}/api/auth/verify/${username}`
+        let link = `${req.protocol}://${req.headers.host}/api/auth/verify/${username}`
         console.log(link)
         let html = `<p>Hi ${user.username}<p><br><p>Please click on the following <a href="${link}">link</a> to verify your account.</p> 
                   <br><p>If you did not request this, please ignore this email.</p>`
