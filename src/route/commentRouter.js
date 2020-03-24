@@ -4,6 +4,7 @@ const passport = require("passport");
 const mongoose = require("mongoose");
 const commentRouter = express.Router();
 const PostSchema = require("../model/postSchema");
+const UserSchema = require("../model/userSchema")
 // get -> api/posts/:postid
 // get -> api/posts/:postid/:commentid
 // post -> api/posts/:postid/:username
@@ -93,9 +94,14 @@ commentRouter.post(
                       img:req.body.img
                  }
                  */
+                 let userInfos = await UserSchema.findOne({
+                   username:req.user.username
+                 })
+                 
+
           let newBody = {
             ...req.body,
-            username: usernameFromReq,
+            userInfo: userInfos,
             postid: postIdFromReq
           };
           const newComment = await Comment.create(newBody);

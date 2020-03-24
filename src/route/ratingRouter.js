@@ -9,7 +9,7 @@ ratingsRouter.get("/:postId", async (req, res) => {
       postId
     } = req.params;
     const upVotes = await Posts.findById(postId);
-    if (upVotes.ratings.length > 0) {
+ 
       const allPostsWithRatings = await Posts.findById(postId, {
         ratings: 1,
         _id: 0
@@ -21,9 +21,7 @@ ratingsRouter.get("/:postId", async (req, res) => {
         upVotalTotal: upVotesForPostId.length,
         post: upVotes
       });
-    } else {
-      res.status(404).send("No upvotes in Post");
-    }
+    
   } catch (error) {
     console.log(error);
     res.status(500).send(error);
