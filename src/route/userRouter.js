@@ -62,9 +62,7 @@ router.post('/:username/image', passport.authenticate('jwt'), uploadLocal.single
         }, {
             new: true
         })
-
-        res.send(updateProfile.image)
-
+        res.send({image: updateProfile.image})
     } catch (error) {
         res.status(500).send(error.message)
     }

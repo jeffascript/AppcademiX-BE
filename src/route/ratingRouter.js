@@ -5,7 +5,9 @@ const ratingsRouter = express.Router();
 
 ratingsRouter.get("/:postId", async (req, res) => {
   try {
-    const { postId } = req.params;
+    const {
+      postId
+    } = req.params;
     const upVotes = await Posts.findById(postId);
     if (upVotes.ratings.length > 0) {
       const allPostsWithRatings = await Posts.findById(postId, {
@@ -13,9 +15,12 @@ ratingsRouter.get("/:postId", async (req, res) => {
         _id: 0
       });
       const upVotesForPostId = allPostsWithRatings.ratings;
-    //   console.log(upVotesForPostId.length);
+      //   console.log(upVotesForPostId.length);
 
-      res.send({ upVotalTotal: upVotesForPostId.length, post:upVotes });
+      res.send({
+        upVotalTotal: upVotesForPostId.length,
+        post: upVotes
+      });
     } else {
       res.status(404).send("No upvotes in Post");
     }
@@ -33,61 +38,82 @@ ratingsRouter.post(
       if (req.user.username !== req.params.username) {
         res
           .status(401)
-          .send({ message: "You are not authorized for this reaction" });
-      }
-      else{
+          .send({
+            message: "You are not authorized for this reaction"
+          });
+      } else {
 
-        const { postID } = req.params;
+        const {
+          postID
+        } = req.params;
         const checkForID = await Posts.findById(postID);
-        
-        if(!checkForID){
-            res.status(404).send({ message: "No post for reaction" });
-        }
 
-        else{
-    
-            const { postID } = req.params;
-            const checkForID = await Posts.findById(postID);
-            if (!checkForID) {
-              res.status(404).send({ message: "No post for reaction" });
-            } else {
-              const userExists = await Posts.find(
-                { "ratings.upvotedBy": req.params.username },
-                { _id: 0, "ratings.$": 1 }
-              );
-      
-              if (userExists) {
-                //   console.log(userExists)
-               const removeExistingUser = { upvotedBy: req.params.username };
-                await Posts.findByIdAndUpdate(postID, {
-                  $pull: { ratings: removeExistingUser }
-                });
-              }
-      
-              const addTheUser = { upvotedBy: req.params.username };
+        if (!checkForID) {
+          res.status(404).send({
+            message: "No post for reaction"
+          });
+        } else {
+
+          const {
+            postID
+          } = req.params;
+          const checkForID = await Posts.findById(postID);
+          if (!checkForID) {
+            res.status(404).send({
+              message: "No post for reaction"
+            });
+          } else {
+            const userExists = await Posts.find({
+              "ratings.upvotedBy": req.params.username
+            }, {
+              _id: 0,
+              "ratings.$": 1
+            });
+
+            if (userExists) {
+              //   console.log(userExists)
+              const removeExistingUser = {
+                upvotedBy: req.params.username
+              };
               await Posts.findByIdAndUpdate(postID, {
-                $push: { ratings: addTheUser }
+                $pull: {
+                  ratings: removeExistingUser
+                }
               });
-
-              
-              const allRatings =   await Posts.findById(postID, {
-                ratings: 1,
-                _id: 0
-              });
-
-              const totalRatings = allRatings.ratings;
-
-             await Posts.findByIdAndUpdate(postID, {
-               $set: { ratingsCount: totalRatings.length }
-             });
-
-              res.send({ message: "added the upvote by " + req.params.username });
-    
-             
             }
+
+            const addTheUser = {
+              upvotedBy: req.params.username
+            };
+            await Posts.findByIdAndUpdate(postID, {
+              $push: {
+                ratings: addTheUser
+              }
+            });
+
+
+            const allRatings = await Posts.findById(postID, {
+              ratings: 1,
+              _id: 0
+            });
+
+            const totalRatings = allRatings.ratings;
+
+            await Posts.findByIdAndUpdate(postID, {
+              $set: {
+                ratingsCount: totalRatings.length
+              }
+            });
+
+            res.send({
+              message: "added the upvote by " + req.params.username
+            });
+
+
+          }
         }
 
-    
+
       }
     } catch (ex) {
       console.log(ex);
@@ -98,47 +124,63 @@ ratingsRouter.post(
 
 
 
-ratingsRouter.delete("/:postID/:username",passport.authenticate("jwt"),
+ratingsRouter.delete("/:postID/:username", passport.authenticate("jwt"),
   async (req, res) => {
     try {
       if (req.user.username !== req.params.username) {
         res
           .status(401)
-          .send({ message: "You are not authorized for this reaction" });
+          .send({
+            message: "You are not authorized for this reaction"
+          });
       } else {
-        const { postID } = req.params;
+        const {
+          postID
+        } = req.params;
         const checkForID = await Posts.findById(postID);
 
         if (!checkForID) {
-          res.status(404).send({ error: "No post for reaction" });
+          res.status(404).send({
+            error: "No post for reaction"
+          });
         } else {
-          const userToBeDeleted = await Posts.find(
-            { "ratings.upvotedBy": req.params.username },
-            { _id: 0, "ratings.$": 1 }
-          );
+          const userToBeDeleted = await Posts.find({
+            "ratings.upvotedBy": req.params.username
+          }, {
+            _id: 0,
+            "ratings.$": 1
+          });
           if (!userToBeDeleted) {
-            
+
             res.status(404).send({
               error: "User never rated the Post"
             });
           } else {
-            let body = { upvotedBy: req.params.username };
+            let body = {
+              upvotedBy: req.params.username
+            };
             await Posts.findByIdAndUpdate(postID, {
-              $pull: { ratings: body }
+              $pull: {
+                ratings: body
+              }
             });
-         
-            const allRatings =   await Posts.findById(postID, {
-                ratings: 1,
-                _id: 0
-              });
 
-              const totalRatings = allRatings.ratings;
+            const allRatings = await Posts.findById(postID, {
+              ratings: 1,
+              _id: 0
+            });
 
-             await Posts.findByIdAndUpdate(postID, {
-               $set: { ratingsCount: totalRatings.length }
-             });
+            const totalRatings = allRatings.ratings;
 
-            res.send({ success: "deleted the like by user" });
+            await Posts.findByIdAndUpdate(postID, {
+              $set: {
+                ratingsCount: totalRatings.length
+              }
+            });
+
+            res.send({
+              success: "deleted the like by user"
+            });
           }
         }
       }
