@@ -42,7 +42,12 @@ const postSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "comments"
     },
-    ratings: [upvote]
+    ratings: [upvote],
+    
+    ratingsCount:{
+        type: Number,
+        default:0
+    }
 }, {
     timestamps: true
 })
