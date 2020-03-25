@@ -1,5 +1,6 @@
 const mongoose = require("mongoose")
 const passport = require("passport-local-mongoose")
+const findOrCreate = require('mongoose-findorcreate')
 const { isEmail } = require("validator")
 
 const userSchema = new mongoose.Schema({
@@ -41,5 +42,6 @@ const userSchema = new mongoose.Schema({
 })
 
 userSchema.plugin(passport)
+userSchema.plugin(findOrCreate)
 
 module.exports = mongoose.model("users",userSchema)
