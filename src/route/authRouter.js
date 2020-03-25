@@ -108,7 +108,7 @@ router.get('/facebook/callback',
 passport.authenticate('facebook', { failureRedirect: '/login' }),
 async (req, res) => {
     try {
-        res.redirect(`http://localhost:3000/callback?token=${generateToken({ _id: req.user.username})}`);
+        res.redirect(`http://localhost:3000/callback?token=${generateToken({ _id: req.user.username})}&username=${ req.user.username}`);
     } catch (error) {
         res.send(error)
     }
