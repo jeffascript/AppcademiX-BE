@@ -1,6 +1,7 @@
 const LocalStrategy = require('passport-local').Strategy
 const JwtStrategy = require('passport-jwt').Strategy
 const ExtractJwt = require('passport-jwt').ExtractJwt
+const FacebookStrategy = require('passport-facebook').Strategy
 const passport = require('passport')
 const UserModel = require('../model/userSchema')
 const jwt = require('jsonwebtoken')
@@ -27,7 +28,38 @@ passport.use(new JwtStrategy(jwtConfig,(jwtPayload,next) => {
 
 
 
-
+passport.use(new FacebookStrategy({
+    clientID: process.env.FB_APP_ID,
+    clientSecret: process.env.FB_SECRET,
+    callbackURL: process.env.CALLBACK_URL,
+    profileFields: ['id', 'displayName', 'photos', 'email','name']
+  },
+  async (accessToken, refreshToken, profile, done) =>{
+    try{
+        console.log(profile)
+        const userFromFacebook = await UserModel.findOne({ username: profile.displayName})
+        console.log(userFromFacebook)
+        if (userFromFacebook) 
+            return done(null, userFromFacebook)
+        else 
+        {
+            const createUserProfile = await UserModel.create({
+                username: profile.displayName,
+                firstname: profile.name.givenName,
+                lastname: profile.name.familyName,
+                image: profile.photos[0].value ,
+                email:profile.emails[0].value,
+                isVerified:true,
+                refreshtoken: refreshToken
+            })
+            return done(null, createUserProfile ) 
+        }
+        return done(null,false)
+    }
+    catch(error){
+        return done(error) 
+    }
+}))
 
 
 

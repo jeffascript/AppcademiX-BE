@@ -2,7 +2,6 @@ const {
     Router
 } = require('express')
 const passport = require('passport')
-const CryptoJS = require("crypto-js");
 const {
     generateToken
 } = require('../middlewares/authentificationMiddleware')
@@ -82,8 +81,6 @@ router.post("/refreshtoken", passport.authenticate('jwt'), async (req, res) => {
 
 router.get('/verify', async (req, res) => {
     try {
-            //const bytes = CryptoJS.AES.decrypt(req.query.token, process.env.CRYPTO_SECRET);
-           // const username = bytes.toString(CryptoJS.enc.Utf8);
             const userProfile = await UserModel.findOneAndUpdate({
                 username: req.query.token
             }, {
@@ -98,6 +95,24 @@ router.get('/verify', async (req, res) => {
     } catch (error) {
         res.status(500).send(error.message)
     }
+});
+
+/**
+ * FACEBOOK LOGIN
+ */
+
+router.get('/facebook',
+passport.authenticate('facebook'));
+
+router.get('/facebook/callback',
+passport.authenticate('facebook', { failureRedirect: '/login' }),
+async (req, res) => {
+    try {
+        res.redirect(`http://localhost:3000/callback?token=${generateToken({ _id: req.user.username})}`);
+    } catch (error) {
+        res.send(error)
+    }
+        
 });
 
 module.exports = router
