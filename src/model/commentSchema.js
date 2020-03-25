@@ -9,13 +9,13 @@ const commentSchema = new mongoose.Schema({
         required: true
     },
 
-    userInfo: [],
 
-    // username: {
-    //     type: mongoose.Schema.Types.String,
-    //     ref: "users",
-    //     required: true
-    // },
+
+    userInfo: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "users",
+        required: true
+    },
     comment: {
         type: String,
         required: true

@@ -28,10 +28,14 @@ commentRouter.get("/:postID", async (req, res) => {
   try {
     //const id = new mongoose.Types.ObjectId(req.params.postID)
     //console.log(id)
-    const comments = await Comment.find({ postid: req.params.postID });
+    const comments = await Comment.find({ postid: req.params.postID })
+    .populate('userInfo');
 
-    //console.log(comments)
-    res.send(comments);
+
+    
+res.send(comments)
+    
+
   } catch (error) {
     console.log(error);
     res.status(500).send(error);
@@ -94,18 +98,20 @@ commentRouter.post(
                       img:req.body.img
                  }
                  */
-                 let userInfos = await UserSchema.findOne({
-                   username:req.user.username
-                 })
+                
                  
-
+                //  const id = mongoose.Types.ObjectId() 
+                //  req.body._id = id
           let newBody = {
             ...req.body,
-            userInfo: userInfos,
+            userInfo:req.user._id,
             postid: postIdFromReq
           };
-          const newComment = await Comment.create(newBody);
+          let newComment = await Comment.create(newBody);
+          newComment = await newComment.populate('userInfo').execPopulate();
 
+          
+          console.log(newComment)
           res.send({
             success: "new comment was made",
             newComment

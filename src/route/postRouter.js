@@ -13,12 +13,13 @@ postsRouter.get("/", async (req, res) => {
     const postsCount = await Posts.countDocuments();
 
     const query = req.query;
-    const { limit, skip, sort } = query;
+    const { limit, skip, sort, number } = query;
     delete query.limit;
     delete query.skip;
     delete query.sort;
+    delete query.number;
     const postsList = await Posts.find(query)
-      .sort({ [sort]: -1 })
+      .sort({ [sort]: number || -1 })
       .limit(parseInt(limit))
       .skip(parseInt(skip));
 

@@ -19,7 +19,7 @@ server.use(express.json()); // without this, you cannot post
 server.use(passport.initialize())
 server.use(cors());
 
-const PORT = process.env.PORT || 9000;
+const PORT = process.env.PORT || 9500;
 
 server.use("/api/auth", authRouter);
 server.use("/api/users", userRouter);
