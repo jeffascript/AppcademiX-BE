@@ -37,14 +37,15 @@ passport.use(new FacebookStrategy({
   async (accessToken, refreshToken, profile, done) =>{
     try{
         console.log(profile)
-        const userFromFacebook = await UserModel.findOne({ username: profile.displayName})
+        const userFromFacebook = await UserModel.findOne({ facebookId: profile.id})
         console.log(userFromFacebook)
         if (userFromFacebook) 
             return done(null, userFromFacebook)
         else 
         {
             const createUserProfile = await UserModel.create({
-                username: profile.displayName,
+                username:`${profile.name.givenName}.${profile.name.familyName}`,
+                facebookId:profile.id,
                 firstname: profile.name.givenName,
                 lastname: profile.name.familyName,
                 image: profile.photos[0].value ,
@@ -54,7 +55,6 @@ passport.use(new FacebookStrategy({
             })
             return done(null, createUserProfile ) 
         }
-        return done(null,false)
     }
     catch(error){
         return done(error) 

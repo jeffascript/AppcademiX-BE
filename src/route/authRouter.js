@@ -102,10 +102,10 @@ router.get('/verify', async (req, res) => {
  */
 
 router.get('/facebook',
-passport.authenticate('facebook'));
+passport.authenticate('facebook',{scope: ['email']}));
 
 router.get('/facebook/callback',
-passport.authenticate('facebook', { failureRedirect: 'http://localhost:3000/login' },{scope: ['email']}),
+passport.authenticate('facebook', {scope: ['email'] ,failureRedirect: 'http://localhost:3000/login' }),
 async (req, res) => {
     try {
         res.redirect(`http://localhost:3000/callback?token=${generateToken({ _id: req.user.username})}&username=${ req.user.username}`);
