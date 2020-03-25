@@ -55,9 +55,12 @@ router.post("/login", verifyEmail(), passport.authenticate('local'), async (req,
             _id: req.user._id,
             username: req.user.username
         })
+
+
         res.send({
             access_token: token,
-            username: req.user.username
+
+            userInfo: req.user
         })
     } catch (error) {
         res.status(500).send(error.message)
@@ -72,7 +75,8 @@ router.post("/refreshtoken", passport.authenticate('jwt'), async (req, res) => {
         })
         res.send({
             access_token: token,
-            username: req.user.username
+            username: req.user.username,
+            userInfo:req.user
         })
     } catch (error) {
         res.status(500).send(error.message)
