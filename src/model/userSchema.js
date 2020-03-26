@@ -29,12 +29,12 @@ const userSchema = new mongoose.Schema({
         required: true
     },
     facebookId:{
-        type: String,
-        unique: true
+        type: String
+       
     },
     googleId: {
-        type: String,
-        unique: true
+        type: String
+        
     },
     image: {
         type: String,

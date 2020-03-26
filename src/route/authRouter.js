@@ -112,7 +112,7 @@ router.get('/facebook/callback',
     passport.authenticate('facebook', { scope: ['email'], failureRedirect: `${process.env.CLIENT_BASE_URL}/login` }),
     async (req, res) => {
         try {
-            res.redirect(`${process.env.CLIENT_BASE_URL}/callback?token=${generateToken({ _id: req.user.username })}&username=${req.user.username}`);
+            res.redirect(`${process.env.CLIENT_BASE_URL}/?token=${generateToken({ _id: req.user._id, username: req.user.username})}&username=${req.user.username}`);
         } catch (error) {
             res.send(error)
         }
@@ -128,9 +128,9 @@ router.get('/google',
 
 router.get('/google/callback',
     passport.authenticate('google', { scope: ['profile','email'], failureRedirect: `${process.env.CLIENT_BASE_URL}/login` }),
-    async (req, res) => {
+    async (req, res) => { 
         try {
-            res.redirect(`${process.env.CLIENT_BASE_URL}/callback?token=${generateToken({ _id: req.user.username })}&username=${req.user.username}`);
+            res.redirect(`${process.env.CLIENT_BASE_URL}/?token=${generateToken({ _id: req.user._id, username: req.user.username})}&username=${req.user.username}`);
         } catch (error) {
             res.send(error)
         }
