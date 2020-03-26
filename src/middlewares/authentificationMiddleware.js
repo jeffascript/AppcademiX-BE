@@ -37,7 +37,7 @@ passport.use(new FacebookStrategy({
   },
   async (accessToken, refreshToken, profile, done) =>{
     try{
-        const userFromFacebook = await UserModel.findOne({ facebookId: profile.id})
+        const userFromFacebook = await UserModel.findOne({ facebookId: profile.id,email:profile.emails[0].value})
         if (userFromFacebook) 
             return done(null, userFromFacebook)
         else 
@@ -72,7 +72,7 @@ passport.use(new GoogleStrategy({
   async (accessToken, refreshToken, profile, done) =>{
     try{
         console.log(profile)
-        const userFromGoogle = await UserModel.findOne({ googleId: profile.id})
+        const userFromGoogle = await UserModel.findOne({ googleId: profile.id,email:profile.emails[0].value})
         console.log(userFromGoogle)
         if (userFromGoogle) 
             return done(null, userFromGoogle)
