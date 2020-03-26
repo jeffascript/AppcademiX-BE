@@ -32,6 +32,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         unique: true
     },
+    googleId: {
+        type: String,
+        unique: true
+    },
     image: {
         type: String,
         default: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Antu_system-switch-user.svg/600px-Antu_system-switch-user.svg.png"
