@@ -5,13 +5,21 @@ const UserModel = require('../model/userSchema')
 const { uploadLocal } = require('../middlewares/uploadOnLocal')
 const router = Router()
 
-
 router.get("/:username", async (req, res) => {
     try {
         const requestedUser = await UserModel.findOne({ username: req.params.username })
         if (!requestedUser)
             throw new Error(`${req.params.username} not found`)
         res.send(requestedUser)
+    } catch (error) {
+        res.status(500).send(error)
+    }
+})
+
+router.get("/", async (req, res) => {
+    try {
+        const users = await UserModel.find({})
+        res.send(users)
     } catch (error) {
         res.status(500).send(error)
     }

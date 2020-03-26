@@ -8,6 +8,16 @@ const multerConfig = multer({});
 const fs = require("fs-extra");
 const path = require("path");
 
+postsRouter.get("/all", async (req, res) => {
+  try{
+    const posts = await Posts.find({})
+    res.status(200).send(posts)
+  }catch(e){
+    console.log(e)
+    res.status(500).send(error)
+  }
+})
+
 postsRouter.get("/", async (req, res) => {
   try {
     const postsCount = await Posts.countDocuments();
