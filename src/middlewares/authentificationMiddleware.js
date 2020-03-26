@@ -2,6 +2,7 @@ const LocalStrategy = require('passport-local').Strategy
 const JwtStrategy = require('passport-jwt').Strategy
 const ExtractJwt = require('passport-jwt').ExtractJwt
 const FacebookStrategy = require('passport-facebook').Strategy
+const GoogleStrategy = require('passport-google-oauth20').Strategy
 const passport = require('passport')
 const UserModel = require('../model/userSchema')
 const jwt = require('jsonwebtoken')
@@ -36,15 +37,14 @@ passport.use(new FacebookStrategy({
   },
   async (accessToken, refreshToken, profile, done) =>{
     try{
-        console.log(profile)
-        const userFromFacebook = await UserModel.findOne({ username: profile.displayName})
-        console.log(userFromFacebook)
+        const userFromFacebook = await UserModel.findOne({ facebookId: profile.id})
         if (userFromFacebook) 
             return done(null, userFromFacebook)
         else 
         {
             const createUserProfile = await UserModel.create({
-                username: profile.displayName,
+                username:`${profile.name.givenName}.${profile.name.familyName}`,
+                facebookId:profile.id,
                 firstname: profile.name.givenName,
                 lastname: profile.name.familyName,
                 image: profile.photos[0].value ,
@@ -54,7 +54,42 @@ passport.use(new FacebookStrategy({
             })
             return done(null, createUserProfile ) 
         }
-        return done(null,false)
+    }
+    catch(error){
+        return done(error) 
+    }
+}))
+
+/**
+ * google strategy
+ */
+
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: process.env.G_CALLBACK_URL
+  },
+  async (accessToken, refreshToken, profile, done) =>{
+    try{
+        console.log(profile)
+        const userFromGoogle = await UserModel.findOne({ googleId: profile.id})
+        console.log(userFromGoogle)
+        if (userFromGoogle) 
+            return done(null, userFromGoogle)
+        else 
+        {
+            const createUserProfile = await UserModel.create({
+                username:`${profile.name.givenName}.${profile.name.familyName}`,
+                googleId:profile.id,
+                firstname: profile.name.givenName,
+                lastname: profile.name.familyName,
+                image: profile.photos[0].value ,
+                email:profile.emails[0].value,
+                isVerified:true,
+                refreshtoken: refreshToken
+            })
+            return done(null, createUserProfile ) 
+        }
     }
     catch(error){
         return done(error) 

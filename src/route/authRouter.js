@@ -85,17 +85,17 @@ router.post("/refreshtoken", passport.authenticate('jwt'), async (req, res) => {
 
 router.get('/verify', async (req, res) => {
     try {
-            const userProfile = await UserModel.findOneAndUpdate({
-                username: req.query.token
-            }, {
-                $set: {
-                    isVerified: true
-                }
-            }, {
-                new: true
-            });
+        const userProfile = await UserModel.findOneAndUpdate({
+            username: req.query.token
+        }, {
+            $set: {
+                isVerified: true
+            }
+        }, {
+            new: true
+        });
 
-            res.redirect('http://localhost:3000/')
+        res.redirect('http://localhost:3000/')
     } catch (error) {
         res.status(500).send(error.message)
     }
@@ -106,17 +106,37 @@ router.get('/verify', async (req, res) => {
  */
 
 router.get('/facebook',
-passport.authenticate('facebook'));
+    passport.authenticate('facebook', { scope: ['email'] }));
 
 router.get('/facebook/callback',
-passport.authenticate('facebook', { failureRedirect: 'http://localhost:3000/login' },{scope: ['email']}),
-async (req, res) => {
-    try {
-        res.redirect(`http://localhost:3000/callback?token=${generateToken({ _id: req.user.username})}&username=${ req.user.username}`);
-    } catch (error) {
-        res.send(error)
-    }
-        
-});
+    passport.authenticate('facebook', { scope: ['email'], failureRedirect: `${process.env.CLIENT_BASE_URL}/login` }),
+    async (req, res) => {
+        try {
+            res.redirect(`${process.env.CLIENT_BASE_URL}/callback?token=${generateToken({ _id: req.user.username })}&username=${req.user.username}`);
+        } catch (error) {
+            res.send(error)
+        }
+
+    });
+
+/**
+ * google
+ */
+
+router.get('/google',
+    passport.authenticate('google', { scope: ['profile','email'] }));
+
+router.get('/google/callback',
+    passport.authenticate('google', { scope: ['profile','email'], failureRedirect: `${process.env.CLIENT_BASE_URL}/login` }),
+    async (req, res) => {
+        try {
+            res.redirect(`${process.env.CLIENT_BASE_URL}/callback?token=${generateToken({ _id: req.user.username })}&username=${req.user.username}`);
+        } catch (error) {
+            res.send(error)
+        }
+
+    });
+
+
 
 module.exports = router
