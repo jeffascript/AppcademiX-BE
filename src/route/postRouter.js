@@ -7,13 +7,40 @@ const multer = require("multer");
 const multerConfig = multer({});
 const fs = require("fs-extra");
 const path = require("path");
+const { pageScraper } = require('../utils/webPageScraper')
+
+/**
+ * get meta data
+ */
+postsRouter.get("/scrap", async (req, res) => {
+  try {
+    let { url } = req.body
+    const $ = await pageScraper(url)
+    const getMetaTag = (name) =>
+      $(`meta[name=${name}]`).attr('content') ||
+      $(`meta[property="og:${name}"]`).attr('content') ||
+      $(`meta[property="twitter:${name}"]`).attr('content')
+
+    const metaData = {
+      title: getMetaTag('title') || '',
+      descripton: getMetaTag('description') || '',
+      image: getMetaTag('image') || '',
+      author: getMetaTag('author') || ''
+    }
+
+    res.status(200).send(metaData)
+
+  } catch (error) {
+    res.status(500).send(error.message)
+  }
+})
 
 
 postsRouter.get("/all", async (req, res) => {
-  try{
+  try {
     const posts = await Posts.find({})
     res.status(200).send(posts)
-  }catch(e){
+  } catch (e) {
     console.log(e)
     res.status(500).send(e)
   }
@@ -36,12 +63,12 @@ postsRouter.get("/", async (req, res) => {
 
     postsList.length > 0
       ? res.send({
-          total: postsCount,
-          queryParam: `${req.protocol}://${req.get(
-            "host"
-          )}/posts?sort=string&limit=number&skip=number`,
-          postsList
-        })
+        total: postsCount,
+        queryParam: `${req.protocol}://${req.get(
+          "host"
+        )}/posts?sort=string&limit=number&skip=number`,
+        postsList
+      })
       : res.status(404).send("No post to show at the moment!");
   } catch (error) {
     console.log(error);
@@ -94,7 +121,7 @@ postsRouter.post(
       } else {
         req.body.username = username;
         // req.body.ratingsCount = db.collection.aggregate( { $project: {name:1, telephoneCount: {$size: "$telephone"}}})
-       
+
         const newPost = await Posts.create(req.body);
         res.send({ success: "Post added", newPost });
       }

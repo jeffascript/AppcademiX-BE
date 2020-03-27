@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "@sendgrid/mail": "^6.5.5",
+    "cheerio": "^1.0.0-rc.3",
     "cors": "^2.8.5",
     "crypto-js": "^4.0.0",
     "dotenv": "^8.2.0",
@@ -20,6 +21,7 @@
     "express-validator": "^6.4.0",
     "fs-extra": "^8.1.0",
     "grabity": "^1.0.5",
+    "get-urls": "^9.2.0",
     "jsonwebtoken": "^8.5.1",
     "linkpreview-for-node": "^1.1.1",
     "mongoose": "^5.9.4",
