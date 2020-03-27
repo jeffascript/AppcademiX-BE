@@ -37,7 +37,7 @@ passport.use(new FacebookStrategy({
   },
   async (accessToken, refreshToken, profile, done) =>{
     try{
-        const userFromFacebook = await UserModel.findOne({ facebookId: profile.id,email:profile.emails[0].value})
+        const userFromFacebook = await UserModel.findOne({email:profile.emails[0].value, facebookId: profile.id})
         if (userFromFacebook) 
             return done(null, userFromFacebook)
         else 
@@ -72,17 +72,17 @@ passport.use(new GoogleStrategy({
   async (accessToken, refreshToken, profile, done) =>{
     try{
         console.log(profile)
-        const userFromGoogle = await UserModel.findOne({ googleId: profile.id,email:profile.emails[0].value})
+        const userFromGoogle = await UserModel.findOne({email:profile.emails[0].value})
         console.log(userFromGoogle)
         if (userFromGoogle) 
             return done(null, userFromGoogle)
         else 
         {
             const createUserProfile = await UserModel.create({
-                username:`${profile.name.givenName}.${profile.name.familyName}`,
+                username:`${profile.name.givenName}${profile.name.familyName || ""}${profile.id}`,
                 googleId:profile.id,
-                firstname: profile.name.givenName,
-                lastname: profile.name.familyName,
+                firstname: profile.name.givenName || profile.name.familyName,
+                lastname: profile.name.familyName || profile.name.givenName,
                 image: profile.photos[0].value ,
                 email:profile.emails[0].value,
                 isVerified:true,
