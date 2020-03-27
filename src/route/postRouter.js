@@ -35,13 +35,14 @@ postsRouter.get("/scrap", async (req, res) => {
   }
 })
 
+
 postsRouter.get("/all", async (req, res) => {
   try {
     const posts = await Posts.find({})
     res.status(200).send(posts)
   } catch (e) {
     console.log(e)
-    res.status(500).send(error)
+    res.status(500).send(e)
   }
 })
 
@@ -228,5 +229,9 @@ postsRouter.delete(
     }
   }
 );
+
+
+
+
 
 module.exports = postsRouter;

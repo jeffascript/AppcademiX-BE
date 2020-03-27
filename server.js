@@ -11,6 +11,7 @@ const postRouter = require("./src/route/postRouter");
 const ratingRouter = require("./src/route/ratingRouter")
 const commentRouter = require("./src/route/commentRouter")
 const path = require("path")
+const grabity = require("grabity");
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -27,6 +28,54 @@ server.use("/api/posts", postRouter);
 server.use("/api/ratings", ratingRouter);
 server.use("/api/comments", commentRouter);
 server.use("/images", express.static(join(__dirname, './public/images/')))
+
+
+ 
+const r  =   (async (url) => {
+
+  try {
+    let it = await grabity.grabIt(url);
+    return it
+    
+  } catch (error) {
+    return error
+  }
+
+});
+
+const metaTagHandler = async (req,res, next)=>{
+  console.log(await r(req.query.url))
+try {
+  const outboundPayload = {
+    time: (new Date()).toISOString(),
+    value: await r(req.query.url)
+  };
+  if(outboundPayload.value.message){
+    res.status(404).send({error: outboundPayload.value.message})
+  }
+else{
+
+  res.json(outboundPayload)
+  .end();
+}
+ 
+  
+} catch (e) {
+  console.log(e)
+    res.status(500).send(e)
+    }
+ 
+}
+
+
+
+server.get('/api/metatag', metaTagHandler);
+
+
+
+
+
+
 
 
 server.use("/images/posts/", express.static(path.join(__dirname, "./images/posts/")))
