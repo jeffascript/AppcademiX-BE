@@ -47,7 +47,8 @@ const postSchema = new mongoose.Schema({
     ratingsCount:{
         type: Number,
         default:0
-    }
+    },
+    tags:[String]
 }, {
     timestamps: true
 })
