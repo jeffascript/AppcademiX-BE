@@ -1,15 +1,10 @@
 const express = require("express");
 const Comment = require("../model/commentSchema");
 const passport = require("passport");
-const mongoose = require("mongoose");
+const {ObjectID} = require("mongodb");
 const commentRouter = express.Router();
 const PostSchema = require("../model/postSchema");
 const UserSchema = require("../model/userSchema")
-// get -> api/posts/:postid
-// get -> api/posts/:postid/:commentid
-// post -> api/posts/:postid/:username
-// put -> api/posts/:postid/:id//:username
-// delete -> api/posts/:postid/:id/:username
 
 commentRouter.get("/", async (req, res) => {
   //request,response
@@ -81,13 +76,8 @@ commentRouter.post(
   passport.authenticate("jwt"),
   async (req, res) => {
     try {
-      //INSRERT comment INTO DB where post = postID AND username = username
-      // create() the req.body into our schema
-      // let body = username, postId,  text/comment
       const usernameFromReq = req.user.username;
       const postIdFromReq = req.params.postid;
-      // console.log(username,postId)
-      // console.log(req.body)
 
       if (usernameFromReq !== req.params.username) {
         res
@@ -96,19 +86,11 @@ commentRouter.post(
       } else {
         const postExists = await PostSchema.findById(postIdFromReq);
         if (postExists) {
-            /* 
-                    let body = {
-                     username:usernameFromReq,
-                      postid:postIdFromReq,
-                      comment:req.body.comment
-                      img:req.body.img
-                 }
-                 */
-                
-                 
-                //  const id = mongoose.Types.ObjectId() 
-                //  req.body._id = id
+            
+          let id = new ObjectID();
           let newBody = {
+            _id:id,
+            parentid:[id],
             ...req.body,
             userInfo:req.user._id,
             postid: postIdFromReq

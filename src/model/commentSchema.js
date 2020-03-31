@@ -4,11 +4,11 @@ const mongoose = require("mongoose")
 
 const commentSchema = new mongoose.Schema({
     postid: {
-        type: mongoose.Schema.Types.String,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "posts",
         required: true
     },
-
+    parentid:[mongoose.Schema.Types.ObjectId],
 
 
     userInfo: {
