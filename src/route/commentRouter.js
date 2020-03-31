@@ -14,8 +14,14 @@ const UserSchema = require("../model/userSchema")
 commentRouter.get("/", async (req, res) => {
   //request,response
   try {
-    const comments = await Comment.find({});
 
+
+    const query = req.query;
+    const { sort } = query;
+    delete query.sort;
+    const comments = await Comment.find(query)
+      .sort({ [sort]: -1 })
+  
     res.send(comments);
   } catch (error) {
     console.log(error);
