@@ -164,8 +164,9 @@ postsRouter.post(
         );
 
         newPostImg.save();
+        const updatedPost = await Posts.findById(req.params.id)
 
-        res.send("image url updated");
+        res.send({msg:"image url updated", newPost:updatedPost });
       }
     } catch (ex) {
       console.log(ex);
