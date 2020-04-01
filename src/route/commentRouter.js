@@ -29,8 +29,8 @@ commentRouter.get("/:postID", async (req, res) => {
   try {
     //const id = new mongoose.Types.ObjectId(req.params.postID)
     //console.log(id)
-    const comments = await Comment.find({ postid: req.params.postID })
-    .populate('userInfo');
+    const comments = await Comment.find({ postid: req.params.postID }).sort('parentid').populate('userInfo');
+
 
 
     
@@ -179,7 +179,7 @@ commentRouter.delete(
             }
             else{
 
-                const deletedComment = await Comment.findByIdAndDelete(req.params.commentid);
+                const deletedComment = await Comment.deleteMany().where('parentid').in(req.params.commentid);
         
                 if (!deletedComment) {
                   res.status(404).send({
