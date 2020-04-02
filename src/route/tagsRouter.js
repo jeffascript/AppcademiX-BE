@@ -18,7 +18,10 @@ router.get('/:hastag', async (req, res) => {
 
 router.post('/:postId', async (req, res) => {
     try {
-        let tags = req.body.tags.split(',').map(singeleTag => singeleTag.trim())
+        if (!req.body.tags.trim())
+            return req.status(404).send(`you must send tags in string separated by coma`)
+
+        let tags = req.body.tags.split(',').map(singleTag => singleTag.trim())
         
         const newTags = await postModel.findByIdAndUpdate(req.params.postId, {
             $addToSet: {

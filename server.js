@@ -30,7 +30,7 @@ server.use("/api/posts", postRouter);
 server.use("/api/ratings", ratingRouter);
 server.use("/api/comments", commentRouter);
 server.use("/api/posts/hastag", tagsRouter);
-server.use("/api/comments/reply", replyRouter);
+server.use("/api/reply", replyRouter);
 server.use("/images", express.static(join(__dirname, './public/images/')))
 
 

@@ -1,10 +1,15 @@
 const express = require("express");
 const Comment = require("../model/commentSchema");
 const passport = require("passport");
-const {ObjectID} = require("mongodb");
+const mongoose = require("mongoose");
 const commentRouter = express.Router();
 const PostSchema = require("../model/postSchema");
 const UserSchema = require("../model/userSchema")
+// get -> api/posts/:postid
+// get -> api/posts/:postid/:commentid
+// post -> api/posts/:postid/:username
+// put -> api/posts/:postid/:id//:username
+// delete -> api/posts/:postid/:id/:username
 
 commentRouter.get("/", async (req, res) => {
   //request,response
@@ -29,8 +34,8 @@ commentRouter.get("/:postID", async (req, res) => {
   try {
     //const id = new mongoose.Types.ObjectId(req.params.postID)
     //console.log(id)
-    const comments = await Comment.find({ postid: req.params.postID }).sort('parentid').populate('userInfo');
-
+    const comments = await Comment.find({ postid: req.params.postID })
+    .populate('userInfo');
 
 
     
@@ -76,8 +81,13 @@ commentRouter.post(
   passport.authenticate("jwt"),
   async (req, res) => {
     try {
+      //INSRERT comment INTO DB where post = postID AND username = username
+      // create() the req.body into our schema
+      // let body = username, postId,  text/comment
       const usernameFromReq = req.user.username;
       const postIdFromReq = req.params.postid;
+      // console.log(username,postId)
+      // console.log(req.body)
 
       if (usernameFromReq !== req.params.username) {
         res
@@ -86,11 +96,19 @@ commentRouter.post(
       } else {
         const postExists = await PostSchema.findById(postIdFromReq);
         if (postExists) {
-            
-          let id = new ObjectID();
+            /* 
+                    let body = {
+                     username:usernameFromReq,
+                      postid:postIdFromReq,
+                      comment:req.body.comment
+                      img:req.body.img
+                 }
+                 */
+                
+                 
+                //  const id = mongoose.Types.ObjectId() 
+                //  req.body._id = id
           let newBody = {
-            _id:id,
-            parentid:[id],
             ...req.body,
             userInfo:req.user._id,
             postid: postIdFromReq
@@ -179,7 +197,7 @@ commentRouter.delete(
             }
             else{
 
-                const deletedComment = await Comment.deleteMany().where('parentid').in(req.params.commentid);
+                const deletedComment = await Comment.findByIdAndDelete(req.params.commentid);
         
                 if (!deletedComment) {
                   res.status(404).send({
