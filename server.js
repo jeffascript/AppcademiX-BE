@@ -12,6 +12,7 @@ const ratingRouter = require("./src/route/ratingRouter")
 const commentRouter = require("./src/route/commentRouter")
 const tagsRouter = require("./src/route/tagsRouter")
 const replyRouter = require("./src/route/replyRouter")
+const rateCommentRouter = require("./src/route/rateCommentRouter")
 const path = require("path")
 const grabity = require("grabity");
 
@@ -31,6 +32,7 @@ server.use("/api/ratings", ratingRouter);
 server.use("/api/comments", commentRouter);
 server.use("/api/posts/hastag", tagsRouter);
 server.use("/api/reply", replyRouter);
+server.use("/api/rate/comment", rateCommentRouter);
 server.use("/images", express.static(join(__dirname, './public/images/')))
 
 

@@ -28,6 +28,16 @@ const commentSchema = new mongoose.Schema({
         ref: "users",
         required: true
     },
+    upvotes:{
+        type: Number,
+        default:0,
+        min:0
+    },
+    upvoters:[mongoose.Schema.Types.ObjectId],
+    upvoted:{
+        type: Boolean,
+        default: false
+    },
     comment: {
         type: String,
         required: true
