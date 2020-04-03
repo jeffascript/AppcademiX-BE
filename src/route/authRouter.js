@@ -56,10 +56,8 @@ router.post("/login", verifyEmail(), passport.authenticate('local'), async (req,
             username: req.user.username
         })
 
-
         res.send({
             access_token: token,
-
             userInfo: req.user
         })
     } catch (error) {
@@ -116,7 +114,6 @@ router.get('/facebook/callback',
         } catch (error) {
             res.send(error)
         }
-
     });
 
 /**
@@ -134,7 +131,6 @@ router.get('/google/callback',
         } catch (error) {
             res.send(error)
         }
-
     });
 
 
