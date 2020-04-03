@@ -37,6 +37,19 @@ commentRouter.get("/:postID", async (req, res) => {
     const comments = await Comment.find({ postid: req.params.postID })
     .populate('userInfo');
 
+   await PostSchema.findByIdAndUpdate(req.params.postID,
+      {
+        $set:{
+          commentsCount: comments.length 
+        }
+      })
+
+      // await Posts.findByIdAndUpdate(postID, {
+      //   $set: {
+      //     ratingsCount: totalRatings.length
+      //   }
+      // });
+    // console.log(comments.length)
 
     
 res.send(comments)
@@ -58,9 +71,13 @@ commentRouter.get("/:postID/:commentid", async (req, res) => {
       _id: req.params.commentid
     });
 
+
+
     uniqueComment
       ? res.send(uniqueComment)
       : res.status(404).send("cannot find this comment");
+
+
 
     // if(uniqueComment){
     //     res.send(uniqueComment)
@@ -114,8 +131,20 @@ commentRouter.post(
             postid: postIdFromReq
           };
           let newComment = await Comment.create(newBody);
+
           newComment = await newComment.populate('userInfo').execPopulate();
 
+
+          const comments = await Comment.find({postid: newComment.postid})
+
+          await PostSchema.findByIdAndUpdate(newComment.postid,
+            {
+              $set:{
+                commentsCount: comments.length 
+              }
+            })
+
+     
           
           console.log(newComment)
           res.send({
