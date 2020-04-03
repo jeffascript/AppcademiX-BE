@@ -10,7 +10,7 @@ const upvote = {
 
 const postSchema = new mongoose.Schema({
     username: {
-        type: mongoose.Schema.Types.String,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "users",
         required: true
     },
@@ -33,6 +33,10 @@ const postSchema = new mongoose.Schema({
     category: {
         type: String,
         required: true
+    },
+    views:{
+        type:Number,
+        default:0
     },
     image: {
         type: String,
