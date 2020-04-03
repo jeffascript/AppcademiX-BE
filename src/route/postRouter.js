@@ -206,7 +206,8 @@ postsRouter.put(
         if (!postToEdit) {
           res.status(404).send(`Post with id: ${req.params.id} is not found !`);
         } else {
-          res.send({ Message: "Updated!", post: req.body });
+          const updatedPost = await Posts.findById(req.params.id)
+          res.send({ Message: "Updated!", newPost: updatedPost });
         }
       }
     } catch (error) {
