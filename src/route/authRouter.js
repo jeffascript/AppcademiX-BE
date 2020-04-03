@@ -55,10 +55,18 @@ router.post("/login", verifyEmail(), passport.authenticate('local'), async (req,
             _id: req.user._id,
             username: req.user.username
         })
-
+        let {_id,username, email,firstname,lastname,image} = req.user
+        let curentUser = {
+            _id,
+            username,
+            email,
+            firstname,
+            lastname,
+            image
+        }
         res.send({
             access_token: token,
-            userInfo: req.user
+            userInfo: curentUser 
         })
     } catch (error) {
         res.status(500).send(error.message)
