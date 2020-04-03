@@ -3,6 +3,15 @@ const passport = require('passport')
 const postModel = require('../model/postSchema')
 const router = Router()
 
+router.get('/all/tags', async (req, res) => {
+    try {
+        let [allTags, allCategory] = await Promise.all([postModel.distinct('tags'),postModel.distinct('category')] )
+        res.json({allTags,allCategory})
+    } catch (ex) {
+res.status(500).send(ex.message)
+    }
+
+});
 
 router.get('/:hastag', async (req, res) => {
     try {
@@ -36,6 +45,7 @@ router.post('/:postId', async (req, res) => {
         res.status(500).send(error.message)
     }
 })
+
 
 
 module.exports = router

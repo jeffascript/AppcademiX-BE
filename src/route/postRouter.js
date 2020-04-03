@@ -79,6 +79,14 @@ postsRouter.get("/", async (req, res) => {
 postsRouter.get("/:id", async (req, res) => {
   try {
     const post = await Posts.findById(req.params.id);
+  
+    if (post) {
+      const postToEdit = await Posts.findByIdAndUpdate(req.params.id, {
+        $inc: {
+          views:1
+        }
+      },{new:true});
+    }
 
     post || post.length > 0
       ? res.send(post)
