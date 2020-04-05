@@ -11,6 +11,7 @@ const {
 const {
     sendEmail
 } = require('../middlewares/sendEmail')
+const {emailTemplate} = require('../utils/registerEmailTemplate')
 const UserModel = require('../model/userSchema')
 const router = Router()
 
@@ -30,9 +31,7 @@ router.post("/register", async (req, res) => {
         let to = user.email
         let from = process.env.FROM_EMAIL
         let link = `${req.protocol}://${req.headers.host}/api/auth/verify?token=${username}`
-        console.log(link)
-        let html = `<p>Hi ${user.username}<p><br><p>Please click on the following <a href="${link}">link</a> to verify your account.</p> 
-                  <br><p>If you did not request this, please ignore this email.</p>`
+        let html = emailTemplate(user,link)
 
         await sendEmail({
             to,
@@ -55,10 +54,18 @@ router.post("/login", verifyEmail(), passport.authenticate('local'), async (req,
             _id: req.user._id,
             username: req.user.username
         })
-
+        let {_id,username, email,firstname,lastname,image} = req.user
+        let curentUser = {
+            _id,
+            username,
+            email,
+            firstname,
+            lastname,
+            image
+        }
         res.send({
             access_token: token,
-            userInfo: req.user
+            userInfo: curentUser 
         })
     } catch (error) {
         res.status(500).send(error.message)
