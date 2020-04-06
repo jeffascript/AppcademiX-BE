@@ -71,9 +71,7 @@ passport.use(new GoogleStrategy({
   },
   async (accessToken, refreshToken, profile, done) =>{
     try{
-        console.log(profile)
         const userFromGoogle = await UserModel.findOne({email:profile.emails[0].value})
-        console.log(userFromGoogle)
         if (userFromGoogle) 
             return done(null, userFromGoogle)
         else 
