@@ -2,6 +2,8 @@ const express = require("express");
 const server = express();
 const cors = require("cors");
 const passport = require('passport');
+const logger = require("./src/utils/winston");
+const morgan = require('morgan')
 const {join} = require('path')
 const listEndPoints = require("express-list-endpoints");
 const connectMongoose = require("./src/db/mongodb");
@@ -19,6 +21,7 @@ const grabity = require("grabity");
 const dotenv = require("dotenv");
 dotenv.config();
 
+server.use(morgan('combined',{stream:logger.stream}))
 server.use(express.json()); // without this, you cannot post
 server.use(passport.initialize())
 server.use(cors());

@@ -25,6 +25,14 @@ router.get("/", async (req, res) => {
 
 router.post("/register", async (req, res) => {
     try {
+        const checkUsername = await UserModel.findOne({username:req.body.username}) 
+        if (checkUsername && checkUsername.username) 
+            return res.status(500).json({ type: 'USERNAME_EXIST', message: 'There is already a Appcademix account with this username' });
+
+            const checkEmail = await UserModel.findOne({email:req.body.email}) 
+            if (checkEmail && checkEmail.email) 
+                return res.status(500).json({ type: 'EMAIL_EXIST', message: 'There is already a Appcademix account with this email address' });
+
         const user = await UserModel.register(req.body, req.body.password)
         const username = user.username
         let subject = "APPCADEMIX Account Verification Token"
