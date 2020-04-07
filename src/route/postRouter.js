@@ -19,13 +19,15 @@ postsRouter.get("/scrap", async (req, res) => {
     const getMetaTag = (name) =>
       $(`meta[name=${name}]`).attr('content') ||
       $(`meta[property="og:${name}"]`).attr('content') ||
-      $(`meta[property="twitter:${name}"]`).attr('content')
-
+      $(`meta[property="twitter:${name}"]`).attr('content') // ||
+      //  $(`#description > ${name} > span:nth-child(1).textContent`) 
+ 
     const metaData = {
       title: getMetaTag('title') || '',
       descripton: getMetaTag('description') || '',
       image: getMetaTag('image') || '',
-      author: getMetaTag('author') || ''
+      author: getMetaTag('author') || '',
+      ytubeDescription: getMetaTag("yt-formatted-string")
     }
 
     res.status(200).send(metaData)
