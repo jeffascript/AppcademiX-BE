@@ -35,7 +35,7 @@ commentRouter.get("/:postID", async (req, res) => {
     //const id = new mongoose.Types.ObjectId(req.params.postID)
     //console.log(id)
     const comments = await Comment.find({ postid: req.params.postID })
-    .populate('userInfo');
+    .populate('userInfo').populate({ path: "replies.userInfo", model : "users"});
 
    await PostSchema.findByIdAndUpdate(req.params.postID,
       {

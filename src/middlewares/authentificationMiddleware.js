@@ -99,5 +99,5 @@ passport.use(new GoogleStrategy({
 
 
 module.exports = {
-    generateToken: user => jwt.sign(user,password,{expiresIn:4000})
+    generateToken: user => jwt.sign(user,password,{expiresIn:400000})
 }
