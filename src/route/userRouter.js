@@ -76,4 +76,19 @@ router.post('/:username/image', passport.authenticate('jwt'), uploadLocal.single
     }
 });
 
+
+router.get("/top", async (req, res) => {
+   
+    try {
+        
+            const topUser = await UserModel.find().sort('-posts').sort('-rating').limit(5)
+            res.send(topUser)
+      
+        
+    } catch (error) {
+        res.status(500).send(error)
+    }
+})
+
+
 module.exports = router
