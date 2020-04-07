@@ -1,6 +1,7 @@
 const express = require("express");
 const passport = require("passport");
 const Posts = require("../model/postSchema");
+const Users = require("../model/userSchema")
 const ratingsRouter = express.Router();
 
 ratingsRouter.get("/:postId", async (req, res) => {
@@ -79,7 +80,15 @@ ratingsRouter.post(
                 }
               });
             }
-
+            //Increase rating of user
+            await Users.findOneAndUpdate({
+              username: checkForID.username
+            }, {
+              $inc: {
+                rating: +1
+              }
+            })
+           
             const addTheUser = {
               upvotedBy: req.params.username
             };
@@ -169,6 +178,17 @@ ratingsRouter.delete("/:postID/:username", passport.authenticate("jwt"),
             });
 
             const totalRatings = allRatings.ratings;
+
+
+            //Decrease rating of user
+            await Users.findOneAndUpdate({
+              username: checkForID.username
+            }, {
+              $inc: {
+                rating: -1
+              }
+            })
+            
 
             await Posts.findByIdAndUpdate(postID, {
               $set: {

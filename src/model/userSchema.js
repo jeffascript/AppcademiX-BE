@@ -36,6 +36,14 @@ const userSchema = new mongoose.Schema({
         type: String
         
     },
+    rating: {
+        type: Number,
+        default: 0
+    },
+    posts: {
+        type: Number,
+        default: 0
+    },
     image: {
         type: String,
         default: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Antu_system-switch-user.svg/600px-Antu_system-switch-user.svg.png"

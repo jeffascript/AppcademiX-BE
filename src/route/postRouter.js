@@ -136,6 +136,15 @@ postsRouter.post(
         req.body.username = username;
         // req.body.ratingsCount = db.collection.aggregate( { $project: {name:1, telephoneCount: {$size: "$telephone"}}})
 
+        //Increase posts sum
+        await Profiles.findOneAndUpdate({
+          username: profile.username
+        }, {
+          $inc: {
+            posts: +1
+          }
+        })
+        
         const newPost = await Posts.create(req.body);
         res.send({ success: "Post added", newPost });
       }
@@ -236,6 +245,14 @@ postsRouter.delete(
             Message: `Post with id: ${req.params.id} not found for deletion!`
           });
         } else {
+          //Decrease posts sum
+        await Profiles.findOneAndUpdate({
+          username: profile.username
+        }, {
+          $inc: {
+            posts: -1
+          }
+        })
           res.send({ Message: "Successfully Deleted" });
         }
       }
