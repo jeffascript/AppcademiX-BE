@@ -43,18 +43,46 @@ router.get("/:commentId/:replyId", async (req, res) => {
 })
 
 router.put("/:commentId/:replyId",passport.authenticate("jwt"),async (req, res) => {
-  try {
-    let newReply = {
-      _id:req.params.replyId,
-      ...req.body,
-      userInfo:req.user._id
+  try { 
+    // let newReply = {
+    //   _id:req.params.replyId,
+    //   ...req.body,
+    //   userInfo:req.user._id
+    // }
+    //   const reply= await CommentModel.findOneAndUpdate({
+    //       _id: req.params.commentId,
+    //       "replies._id": new ObjectId(req.params.replyId) 
+    //   }, {"$set":{"replies": newReply}}, {new: true}).populate({ path: "replies.userInfo", model : "users"})
+    //   res.send(reply)
+
+
+
+    const forEdit = await CommentModel.findOne(
+      {
+        _id: req.params.commentId,
+          "replies._id": req.params.replyId
+      }) 
+
+if (forEdit){
+
+  let newBody = {...req.body, userInfo:req.user._id}
+
+    const updateData = newBody;
+    const set = {};
+
+    for (const field in updateData) {
+        set["replies.$." + field] = updateData[field];
     }
-      const reply= await CommentModel.findOneAndUpdate({
+   const new1 = await CommentModel.updateOne(
+        {
           _id: req.params.commentId,
-          "replies._id": new ObjectId(req.params.replyId) 
-      }, {"$set":{"replies": newReply}}, {new: true}).populate({ path: "replies.userInfo", model : "users"})
-      res.send(reply)
-  } catch (error) {
+          "replies._id": req.params.replyId
+        },
+        { $set: set }, {new: true}
+    ).populate({ path: "replies.userInfo", model : "users"});
+    res.send(new1)
+  }
+} catch (error) {
       res.status(500).send(error.message)
   }
 })
