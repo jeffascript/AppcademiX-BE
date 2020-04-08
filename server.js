@@ -21,7 +21,7 @@ const grabity = require("grabity");
 const dotenv = require("dotenv");
 dotenv.config();
 
-server.use(morgan('combined',{stream:logger.stream}))
+/* server.use(morgan('combined',{stream:logger.stream})) */
 server.use(express.json()); // without this, you cannot post
 server.use(passport.initialize())
 server.use(cors());
