@@ -2,6 +2,7 @@ const {
     Router
 } = require('express')
 const passport = require('passport')
+const jwt = require('jsonwebtoken')
 const {
     generateToken
 } = require('../middlewares/authentificationMiddleware')
@@ -12,6 +13,7 @@ const {
     sendEmail
 } = require('../middlewares/sendEmail')
 const {emailTemplate} = require('../utils/registerEmailTemplate')
+const {passTemplate} = require('../utils/changePassTemplate')
 const UserModel = require('../model/userSchema')
 const router = Router()
 
@@ -27,11 +29,11 @@ router.post("/register", async (req, res) => {
     try {
         const checkUsername = await UserModel.findOne({username:req.body.username}) 
         if (checkUsername && checkUsername.username) 
-            return res.status(500).json({ type: 'USERNAME_EXIST', message: 'There is already a Appcademix account with this username' });
+            return res.status(500).json({ type: 'USERNAME_EXIST', message: 'There is already a account with this username' });
 
             const checkEmail = await UserModel.findOne({email:req.body.email}) 
             if (checkEmail && checkEmail.email) 
-                return res.status(500).json({ type: 'EMAIL_EXIST', message: 'There is already a Appcademix account with this email address' });
+                return res.status(500).json({ type: 'EMAIL_EXIST', message: 'There is already account with this email address' });
 
         const user = await UserModel.register(req.body, req.body.password)
         const username = user.username
@@ -108,10 +110,77 @@ router.get('/verify', async (req, res) => {
             new: true
         });
 
-        res.redirect('http://localhost:3000/')
+        res.redirect(`${process.env.CLIENT_BASE_URL}/`)
     } catch (error) {
         res.status(500).send(error.message)
     }
+});
+
+/**
+ * change password
+ */
+
+router.post('/changepwd', async (req, res) => {
+    try {
+        const userProfile = await UserModel.findOne({email:req.body.email})
+        if (!userProfile && !checkUsername.email) 
+            return res.status(404).json({ type: 'NOT_FOUND', message: 'user not found' });
+
+        let token = jwt.sign({_id:userProfile._id,username:userProfile.username},process.env.JWT_SECRET_EMAIL,{expiresIn:'24h'})
+
+        let subject = "APPCADEMIX change password"
+        let to = req.body.email
+        let from = process.env.FROM_EMAIL
+        let link = `${req.protocol}://${req.headers.host}/api/auth/callback/password?token=${token}`
+        let html = passTemplate(userProfile,link)
+
+        await sendEmail({
+            to,
+            from,
+            subject,
+            html
+        });
+        
+
+        res.status(200).json({
+            message: 'we send you email with the recovery link'
+        })
+
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+});
+
+router.get('/callback/password', async (req, res) => {
+    let token = req.query.token
+    try {
+        let decodedToken = await jwt.verify(token,process.env.JWT_SECRET_EMAIL)
+        if (!decodedToken && !decodedToken.username)
+            return res.status(500).json({type:'TOKEN_EXPIRED', messge:'your token is expired'})
+
+        res.redirect(`${process.env.CLIENT_BASE_URL}/password/?userid=${decodedToken._id}&username=${decodedToken.username}`)
+        
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+	
+});
+
+router.post('/change/password', async (req, res) => {
+    
+    try {
+        if (!req.body)
+            return res.status(500).json({type:'BODY_REQUIRED', messge:'body is required'})
+
+        const userProfile = await UserModel.setPassword(req.body.password)
+        userProfile.save()
+
+        res.redirect(`${process.env.CLIENT_BASE_URL}/login/`)
+        
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+	
 });
 
 /**

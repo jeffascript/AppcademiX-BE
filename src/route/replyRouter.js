@@ -2,6 +2,7 @@ const express = require("express");
 const CommentModel = require("../model/commentSchema");
 const passport = require("passport");
 const router = express.Router();
+const {ObjectId} = require('mongodb')
 
 
 router.post(
@@ -49,15 +50,20 @@ router.get("/:commentId/:replyId", async (req, res) => {
   }
 })
 
-router.patch("/:commentId/:replyId",passport.authenticate("jwt"),async (req, res, next) => {
+router.put("/:commentId/:replyId",passport.authenticate("jwt"),async (req, res) => {
   try {
+    let newReply = {
+      _id:req.params.replyId,
+      ...req.body,
+      userInfo:req.user._id
+    }
       const reply= await CommentModel.findOneAndUpdate({
           _id: req.params.commentId,
-          "replies._id": req.params.replyId
-      }, {"replies.$": req.body}, {new: true})
-      res.send("succefully edited!!!!")
+          "replies._id": new ObjectId(req.params.replyId) 
+      }, {"$set":{"replies": newReply}}, {new: true}).populate({ path: "replies.userInfo", model : "users"})
+      res.send(reply)
   } catch (error) {
-      res.status(500).send(error)
+      res.status(500).send(error.message)
   }
 })
 
