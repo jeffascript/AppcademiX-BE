@@ -50,7 +50,7 @@ router.post("/register", async (req, res) => {
             html
         });
         res.status(200).json({
-            message: 'You have been successfully registered check your email activate your account'
+            message: 'You have been successfully registered check your email to activate your account'
         })
 
     } catch (error) {
