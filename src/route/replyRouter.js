@@ -57,6 +57,7 @@ router.put("/:commentId/:replyId",passport.authenticate("jwt"),async (req, res) 
       ...req.body,
       userInfo:req.user._id
     }
+    console.log("test")
       const reply= await CommentModel.findOneAndUpdate({
           _id: req.params.commentId,
           "replies._id": new ObjectId(req.params.replyId) 
