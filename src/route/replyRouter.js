@@ -53,15 +53,14 @@ router.get("/:commentId/:replyId", async (req, res) => {
 router.put("/:commentId/:replyId",passport.authenticate("jwt"),async (req, res) => {
   try {
     let newReply = {
-      _id:req.params.replyId,
       ...req.body,
       userInfo:req.user._id
     }
     console.log("test")
-      const reply= await CommentModel.findOneAndUpdate({
+      const reply= await CommentModel.findOne({
           _id: req.params.commentId,
-          "replies._id": req.params.replyId
-      }, {"$set":{"replies": newReply}}, {new: true}).populate({ path: "replies.userInfo", model : "users"})
+          "replies._id": new ObjectId(req.params.replyId) 
+      },{$set:{"replies.$.reply":"sambareesssss"}}).populate({ path: "replies.userInfo", model : "users"})
       res.send(reply)
   } catch (error) {
       res.status(500).send(error.message)
