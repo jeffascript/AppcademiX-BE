@@ -46,7 +46,7 @@ const userSchema = new mongoose.Schema({
     },
     image: {
         type: String,
-        default: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Antu_system-switch-user.svg/600px-Antu_system-switch-user.svg.png"
+        default: "https://resource3.s3-ap-southeast-2.amazonaws.com/img/defaults/default-user-avatar.png"
     },
     isVerified :{
         type: Boolean,
