@@ -46,7 +46,7 @@ const userSchema = new mongoose.Schema({
     },
     image: {
         type: String,
-        default: "https://resource3.s3-ap-southeast-2.amazonaws.com/img/defaults/default-user-avatar.png"
+        default: "http://st.ulximg.com/static/images/default_avatar.jpg"
     },
     isVerified :{
         type: Boolean,
