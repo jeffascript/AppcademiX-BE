@@ -77,7 +77,7 @@ passport.use(new GoogleStrategy({
         else 
         {
             const createUserProfile = await UserModel.create({
-                username:`${profile.name.givenName}${profile.name.familyName || profile.id}`,
+                username:`${profile.name.givenName}${profile.name.familyName || profile.id.slice(0,4)}`,
                 googleId:profile.id,
                 firstname: profile.name.givenName || profile.name.familyName,
                 lastname: profile.name.familyName || profile.name.givenName,
