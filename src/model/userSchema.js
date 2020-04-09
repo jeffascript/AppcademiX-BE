@@ -58,6 +58,6 @@ const userSchema = new mongoose.Schema({
 })
 
 userSchema.plugin(passport)
-userSchema.plugin(findOrCreate)
+// userSchema.plugin(findOrCreate)
 
 module.exports = mongoose.model("users",userSchema)
