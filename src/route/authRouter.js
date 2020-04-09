@@ -17,6 +17,11 @@ const {passTemplate} = require('../utils/changePassTemplate')
 const UserModel = require('../model/userSchema')
 const router = Router()
 
+
+
+
+
+
 router.get("/", async (req, res) => {
     try {
         res.send(await UserModel.find({}))
@@ -120,18 +125,18 @@ router.get('/verify', async (req, res) => {
  * change password
  */
 
-router.post('/changepwd', async (req, res) => {
+router.post('/forgotpwd', async (req, res) => {
     try {
         const userProfile = await UserModel.findOne({email:req.body.email})
         if (!userProfile && !checkUsername.email) 
             return res.status(404).json({ type: 'NOT_FOUND', message: 'user not found' });
 
-        let token = jwt.sign({_id:userProfile._id,username:userProfile.username},process.env.JWT_SECRET_EMAIL,{expiresIn:'24h'})
+        let token = generateToken({_id:userProfile._id})
 
         let subject = "APPCADEMIX change password"
         let to = req.body.email
         let from = process.env.FROM_EMAIL
-        let link = `${req.protocol}://${req.headers.host}/api/auth/callback/password?token=${token}`
+        let link = `${process.env.CLIENT_BASE_URL}/password?token=${token}&username=${userProfile.username}`
         let html = passTemplate(userProfile,link)
 
         await sendEmail({
@@ -151,37 +156,22 @@ router.post('/changepwd', async (req, res) => {
     }
 });
 
-router.get('/callback/password', async (req, res) => {
-    let token = req.query.token
+router.post('/resetpassword', passport.authenticate("jwt"), async (req, res) => {
+  
     try {
-        let decodedToken = await jwt.verify(token,process.env.JWT_SECRET_EMAIL)
-        if (!decodedToken && !decodedToken.username)
-            return res.status(500).json({type:'TOKEN_EXPIRED', messge:'your token is expired'})
 
-        res.redirect(`${process.env.CLIENT_BASE_URL}/password/?userid=${decodedToken._id}&username=${decodedToken.username}`)
+        const u = await UserModel.findById(req.user._id)
+        await u.setPassword(req.body.password)
+        u.save()
+        res.send({message:"password updated"})
         
     } catch (error) {
-        res.status(500).send(error.message)
+        res.status(500).send(error)
     }
 	
 });
 
-router.post('/change/password', async (req, res) => {
-    
-    try {
-        if (!req.body)
-            return res.status(500).json({type:'BODY_REQUIRED', messge:'body is required'})
 
-        const userProfile = await UserModel.setPassword(req.body.password)
-        userProfile.save()
-
-        res.redirect(`${process.env.CLIENT_BASE_URL}/login/`)
-        
-    } catch (error) {
-        res.status(500).send(error.message)
-    }
-	
-});
 
 /**
  * FACEBOOK LOGIN
