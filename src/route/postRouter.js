@@ -233,6 +233,8 @@ postsRouter.delete(
   passport.authenticate("jwt"),
   async (req, res) => {
     try {
+      const { username } = req.params;
+      const profile = await Profiles.findOne({ username });
       if (req.user.username !== req.params.username) {
         res
           .status(401)
@@ -250,7 +252,8 @@ postsRouter.delete(
           username: profile.username
         }, {
           $inc: {
-            posts: -1
+            posts: -1,
+            rating: -deletedPost.ratingsCount
           }
         })
           res.send({ Message: "Successfully Deleted" });
