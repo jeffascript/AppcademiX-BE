@@ -32,6 +32,12 @@ const emailTemplate = (user, link) => {
 			color: inherit !important;
 			text-decoration: none !important;
 		}
+		.e7m a {
+			color: #fff !important;
+		}
+		.e7m a:hover {
+			color: #212020 !important;
+		}
 	</style>
 <style id="media-query" type="text/css">
 		@media (max-width: 620px) {
