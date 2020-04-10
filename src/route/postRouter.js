@@ -8,7 +8,8 @@ const multerConfig = multer({});
 const fs = require("fs-extra");
 const path = require("path");
 const { pageScraper } = require('../utils/webPageScraper')
-
+const { uploadCloudinary, cloudConfig } = require ("../middlewares/uploadOnCloudinary")
+const cloudinary = require('cloudinary')
 /**
  * get meta data
  */
@@ -157,26 +158,19 @@ postsRouter.post(
 
 postsRouter.post(
   "/image/:id/:username",
-  multerConfig.single("postImage"),
+  uploadCloudinary.single('postImage'),
   passport.authenticate("jwt"),
   async (req, res) => {
     try {
       if (req.user.username !== req.params.username) {
         res.status(401).send("You are not authorized to post");
       } else {
-        const fileName = `post_${req.params.id}${path.extname(
-          req.file.originalname
-        )}`; //the assigned name for the image with extension name
-        const newImageLocation = path.join(
-          __dirname,
-          "../../images/posts",
-          fileName
-        );
-        await fs.writeFile(newImageLocation, req.file.buffer);
-        req.body.image = `${req.protocol}://${req.get(
-          "host"
-        )}/images/posts/${fileName}`;
+     
 
+        cloudConfig
+          const newImage =   await  cloudinary.uploader.upload(req.file.path)
+          let imageUrl = `${newImage.secure_url}`
+          req.body.image = imageUrl
         const newPostImg = await Posts.findByIdAndUpdate(
           { _id: req.params.id },
           {
@@ -197,6 +191,11 @@ postsRouter.post(
     }
   }
 );
+
+
+
+
+
 
 postsRouter.put(
   "/:username/:id",

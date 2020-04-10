@@ -3,6 +3,8 @@ const passport = require('passport')
 const {extname} = require('path')
 const UserModel = require('../model/userSchema')
 const { uploadLocal } = require('../middlewares/uploadOnLocal')
+const { uploadCloudinary, cloudConfig } = require ("../middlewares/uploadOnCloudinary")
+const cloudinary = require('cloudinary')
 const router = Router()
 
 router.get("/:username", async (req, res) => {
@@ -53,6 +55,10 @@ router.delete('/:username', passport.authenticate('jwt'), async (req, res) => {
     }
 });
 
+/* 
+
+This was used for the local server storage with multer!
+
 router.post('/:username/image', passport.authenticate('jwt'), uploadLocal.single('profile'), async (req, res) => {
     try {
         if (req.params.username !== req.user.username)
@@ -75,6 +81,37 @@ router.post('/:username/image', passport.authenticate('jwt'), uploadLocal.single
         res.status(500).send(error.message)
     }
 });
+
+*/
+
+
+
+
+
+router.post('/:username/image', passport.authenticate('jwt'), uploadCloudinary.single('profile'), async (req, res) => {
+    try {
+        if (req.params.username !== req.user.username)
+            throw new Error(`unauthorized to edit ***** ${req.params.username} ***** profile`)
+        if (!req.file)
+            return res.status(500).send('Please select an image')
+        cloudConfig
+        const newImage =   await  cloudinary.uploader.upload(req.file.path)
+        let imageUrl = `${newImage.secure_url}`
+        req.body.image = imageUrl
+        let updateProfile = await UserModel.findOneAndUpdate({
+            username: req.params.username
+        }, {
+            ...req.body
+        }, {
+            new: true
+        })
+        res.send({image: updateProfile.image})
+    } catch (error) {
+        res.status(500).send(error.message)
+    }
+});
+
+
 
 
 router.get("/top", async (req, res) => {

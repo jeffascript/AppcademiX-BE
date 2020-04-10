@@ -17,7 +17,7 @@ const replyRouter = require("./src/route/replyRouter")
 const rateCommentRouter = require("./src/route/rateCommentRouter")
 const path = require("path")
 const grabity = require("grabity");
-
+const cloudinary = require("cloudinary")
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -37,6 +37,8 @@ server.use("/api/posts/hastag", tagsRouter);
 server.use("/api/reply", replyRouter);
 server.use("/api/rate/comment", rateCommentRouter);
 server.use("/images", express.static(join(__dirname, './public/images/')))
+
+
 
 
  
