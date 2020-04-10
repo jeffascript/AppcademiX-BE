@@ -170,12 +170,12 @@ postsRouter.post(
         cloudConfig
           const newImage =   await  cloudinary.uploader.upload(req.file.path)
           let imageUrl = `${newImage.secure_url}`
-          req.body.image = imageUrl
+          // req.body.image = imageUrl
         const newPostImg = await Posts.findByIdAndUpdate(
           { _id: req.params.id },
           {
             $set: {
-              image: req.body.image
+              image: imageUrl
             }
           }
         );
