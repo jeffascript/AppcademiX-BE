@@ -78,7 +78,17 @@ server.use(
 
 console.log(listEndPoints(server));
 
-server.listen(PORT, () => {
-  console.log(`I am listening to port ${PORT}`);
-  connectMongoose();
+/*
+Connections in a Serverless Runtime: 
+MongoDB is not an on-demand database and its connection mechanism is persistent, it can also take a moment to establish the connection for the first time. For best performance, avoid making a connection inside a route handler.
+
+// server.listen(PORT, () => {
+//   console.log(`I am listening to port ${PORT}`);
+//   // connectMongoose();
+// });
+*/
+connectMongoose().then(() => {
+  server.listen(PORT, () => {
+    console.log(`I am listening to port ${PORT}`);
+  });
 });
